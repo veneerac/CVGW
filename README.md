@@ -40,7 +40,8 @@ A RESTful API for a job portal system built with Flask and SQLAlchemy, featuring
 
 2. **Install dependencies**
    ```bash
-   pip install -r requirements.txt
+   pip3 install flask_sqlalchemy
+   pip3 install email_validator
    ```
 
    Required packages (if not using requirements.txt):
