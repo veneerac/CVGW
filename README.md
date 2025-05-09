@@ -144,14 +144,6 @@ db.create_all()
 rm instance/app.db
 ```
 
-## Testing
-
-Test API endpoints using:
-```bash
-# Example test script
-python tests/test_endpoints.py
-```
-
 Or manually test with cURL/Postman using the examples provided above.
 
 ## Project Structure
@@ -165,17 +157,6 @@ Or manually test with cURL/Postman using the examples provided above.
 └── tests/                 # Test scripts
 ```
 
-## Contributing
-
-1. Fork the repository
-2. Create feature branch (`git checkout -b feature/amazing-feature`)
-3. Commit changes (`git commit -m 'Add amazing feature'`)
-4. Push to branch (`git push origin feature/amazing-feature`)
-5. Open Pull Request
-
-## License
-
-[MIT License](LICENSE)
 
 ## Acknowledgments
 
