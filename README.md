@@ -71,7 +71,7 @@ A RESTful API for a job portal system built with Flask and SQLAlchemy, featuring
 ## Running the Server
 
 ```bash
-flask run
+CVgateway/python3 app.py
 ```
 
 The API will be available at `http://localhost:5000`
