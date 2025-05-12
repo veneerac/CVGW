@@ -100,6 +100,17 @@ ADMIN_PASSWORD=adminpass
 | POST   | /jobs/{id}/apply        | Apply for job (User)                 |
 | GET    | /applications           | View applications (User/Recruiter)   |
 
+
+### User Information
+
+| Username                 | Password     | Role      |
+|--------------------------|--------------|-----------|
+| admin@example.com        | adminpass    | ADMIN     |
+| recruiter@example.com    | secret123    | RECRUITER |
+| hr.sarah@careers.org     | HrMaster$55  | USER      |
+
+
+
 ### Example Requests
 
 **Create User:**
