@@ -443,6 +443,11 @@ def manage_job(job_id):
 # User: Apply for Job
 @app.route('/jobs/<int:job_id>/apply', methods=['POST'])
 def apply_job(job_id):
+    transfer_encoding = request.headers.get('Transfer-Encoding', '')
+    if 'chunked' in transfer_encoding.lower():
+        return create_xml_response('error', {'message': 'unknown error occurred'}, 400)
+
+    # Existing code below
     email = request.form.get('email')
     password = request.form.get('password')
     
@@ -480,6 +485,9 @@ def apply_job(job_id):
 # Recruiter: View Applications
 @app.route('/jobs/<int:job_id>/applications', methods=['GET'])
 def view_applications(job_id):
+    transfer_encoding = request.headers.get('Transfer-Encoding', '')
+    if 'chunked' in transfer_encoding.lower():
+        return create_xml_response('error', {'message': 'unknown error occurred'}, 400)
     email = request.args.get('email')
     password = request.args.get('password')
     
