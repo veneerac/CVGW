@@ -32,8 +32,8 @@ class JobStatus(enum.Enum):
 
 class ApplicationStatus(enum.Enum):
     PENDING = 'pending'
-    APPROVED = 'approved'    
-
+    APPROVED = 'approved'
+    REJECTED = 'rejected'
 # --- MODELS ---
 
 class User(db.Model):
@@ -485,9 +485,6 @@ def apply_job(job_id):
 # Recruiter: View Applications
 @app.route('/jobs/<int:job_id>/applications', methods=['GET'])
 def view_applications(job_id):
-    transfer_encoding = request.headers.get('Transfer-Encoding', '')
-    if 'chunked' in transfer_encoding.lower():
-        return create_xml_response('error', {'message': 'unknown error occurred'}, 400)
     email = request.args.get('email')
     password = request.args.get('password')
     
@@ -515,9 +512,21 @@ def view_applications(job_id):
         ET.SubElement(app_elem, 'status').text = app.status.value
         
         user = User.query.get(app.user_id)
-        if user and user.profile:
-            ET.SubElement(app_elem, 'summary').text = user.profile.summary or ''
-            ET.SubElement(app_elem, 'skills').text = user.profile.skills or ''
+        if user:
+            # Add user details
+            ET.SubElement(app_elem, 'email').text = user.email
+            ET.SubElement(app_elem, 'first_name').text = user.first_name
+            ET.SubElement(app_elem, 'last_name').text = user.last_name
+            ET.SubElement(app_elem, 'date_of_birth').text = user.date_of_birth
+            ET.SubElement(app_elem, 'address').text = user.address
+            
+            # Add profile details if exists
+            if user.profile:
+                profile_elem = ET.SubElement(app_elem, 'profile')
+                ET.SubElement(profile_elem, 'summary').text = user.profile.summary or ''
+                ET.SubElement(profile_elem, 'skills').text = user.profile.skills or ''
+                ET.SubElement(profile_elem, 'education').text = user.profile.education or ''
+                ET.SubElement(profile_elem, 'experience').text = user.profile.experience or ''
 
     xml_str = ET.tostring(root)
     response = make_response(xml_str)
@@ -546,6 +555,7 @@ def user_applications():
         app_elem = ET.SubElement(root, 'application')
         job = Job.query.get(app.job_id)
         ET.SubElement(app_elem, 'id').text = str(app.id)
+        ET.SubElement(app_elem, 'job_id').text = str(app.job_id)
         ET.SubElement(app_elem, 'job_title').text = job.title
         ET.SubElement(app_elem, 'company').text = job.company
         ET.SubElement(app_elem, 'status').text = app.status.value
@@ -556,11 +566,13 @@ def user_applications():
     return response
 
 # Recruiter: Approve Application
-@app.route('/applications/<int:application_id>/approve', methods=['PUT'])
-def approve_application(application_id):
+# Combined approve/reject route
+@app.route('/applications/<int:application_id>/<action>', methods=['PUT'])
+def handle_application(application_id, action):
     email = request.form.get('email')
     password = request.form.get('password')
     
+    # Validate recruiter
     recruiter = User.query.filter_by(
         email=email,
         password=password,
@@ -571,13 +583,21 @@ def approve_application(application_id):
     if not recruiter:
         return create_xml_response('error', {'message': 'Invalid recruiter credentials'}, 403)
 
+    # Get application and job
     application = Application.query.get_or_404(application_id)
     job = Job.query.get(application.job_id)
     
     if job.recruiter_id != recruiter.id:
         return create_xml_response('error', {'message': 'Unauthorized'}, 403)
 
-    application.status = ApplicationStatus.APPROVED
+    # Handle action
+    if action == 'approve':
+        application.status = ApplicationStatus.APPROVED
+    elif action == 'reject':
+        application.status = ApplicationStatus.REJECTED
+    else:
+        return create_xml_response('error', {'message': 'Invalid action'}, 400)
+    
     db.session.commit()
     
     return create_xml_response('application', {
@@ -610,6 +630,37 @@ def change_role(user_id):
         'id': user.id,
         'role': user.role.value
     })
+
+@app.route('/jobs', methods=['GET'])
+def list_jobs():
+    # Allow any approved user (USER, RECRUITER, ADMIN) to view approved jobs
+    email = request.args.get('email')
+    password = request.args.get('password')
+    
+    user = User.query.filter_by(
+        email=email,
+        password=password,
+        status=UserStatus.APPROVED
+    ).first()
+    
+    if not user:
+        return create_xml_response('error', {'message': 'Invalid credentials'}, 403)
+    
+    jobs = Job.query.filter_by(status=JobStatus.APPROVED).all()
+    
+    root = ET.Element('jobs')
+    for job in jobs:
+        job_elem = ET.SubElement(root, 'job')
+        ET.SubElement(job_elem, 'id').text = str(job.id)
+        ET.SubElement(job_elem, 'title').text = job.title
+        ET.SubElement(job_elem, 'company').text = job.company
+        ET.SubElement(job_elem, 'description').text = job.description
+    
+    xml_str = ET.tostring(root)
+    response = make_response(xml_str)
+    response.headers['Content-Type'] = 'application/xml'
+    return response
+    
 
 # ... (keep other existing routes the same) ...
 
