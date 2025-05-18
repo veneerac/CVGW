@@ -100,6 +100,7 @@ ADMIN_PASSWORD=adminpass
 | POST   | /jobs/{id}/apply        | Apply for job (User)                 |
 | GET    | /applications           | View applications (User/Recruiter)   |
 
+Download CV_gateway.postman_collection.json collection 
 
 ### User Information
 
