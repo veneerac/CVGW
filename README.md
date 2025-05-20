@@ -13,7 +13,7 @@ A RESTful API for a job portal system built with Flask and SQLAlchemy, featuring
 - XML-based API responses
 - SQLite database (default)
 - Email validation
-- Admin dashboard capabilities
+
 
 ## Technologies Used
 
@@ -34,8 +34,8 @@ A RESTful API for a job portal system built with Flask and SQLAlchemy, featuring
 
 1. **Clone repository**
    ```bash
-   git clone https://github.com/yourusername/job-portal-api.git
-   cd job-portal-api
+   git clone[ https://github.com/yourusername/job-portal-api.git](https://github.com/veneerac/CVGW
+   cd CVGW
    ```
 
 2. **Install dependencies**
@@ -60,31 +60,6 @@ A RESTful API for a job portal system built with Flask and SQLAlchemy, featuring
    set FLASK_ENV=development
    ```
 
-4. **Initialize database**
-   ```bash
-   flask shell
-   >>> from app import db
-   >>> db.create_all()
-   >>> exit()
-   ```
-
-## Running the Server
-
-```bash
-CVgateway/python3 app.py
-```
-
-The API will be available at `http://localhost:5000`
-
-## Configuration
-
-Create `.env` file for environment variables:
-```env
-FLASK_APP=app.py
-FLASK_ENV=development
-DATABASE_URL=sqlite:///app.db
-ADMIN_EMAIL=admin@example.com
-ADMIN_PASSWORD=adminpass
 ```
 
 ## API Documentation
@@ -142,22 +117,13 @@ curl -X POST http://localhost:5000/jobs \
   -d "required_skills=Python,Flask" \
   -d "posting_date=2023-08-01"
 ```
- Note : Use the default database in the report unless a change is explicitly requested. To switch the database, use the following commands:
+ Note: Use the default database in the report unless a change is explicitly requested. To switch the database, use the following commands:
 
-## Database Management
-
-**Initialize Database:**
-```python
-from app import db
-db.create_all()
-```
 
 **Reset Database:**
 ```bash
 rm instance/app.db
 ```
-
-Or manually test with cURL/Postman using the examples provided above.
 
 ## Project Structure
 
