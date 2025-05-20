@@ -142,6 +142,7 @@ curl -X POST http://localhost:5000/jobs \
   -d "required_skills=Python,Flask" \
   -d "posting_date=2023-08-01"
 ```
+ Note : Use the default database in the report unless a change is explicitly requested. To switch the database, use the following commands:
 
 ## Database Management
 
